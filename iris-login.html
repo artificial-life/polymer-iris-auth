@@ -8,10 +8,8 @@
         display: block;
       }
     </style>
-    <p>{{api.some_var}}</p>
-    <p>{{counter}}</p>
-    <paper-input label="Login"></paper-input>
-    <paper-input label="Password" type="password"></paper-input>
+    <paper-input label="Login" value="{{login::input}}"></paper-input>
+    <paper-input label="Password" type="password" value="{{password::input}}"></paper-input>
     <paper-button raised>login</paper-button>
   </template>
 
@@ -24,23 +22,18 @@
         properties: {
           api: Object
         },
-        created: function() {
-          console.log('created');
-        },
         ready() {
           console.log('ready');
-
-          let b = this.querySelector('paper-button');
           let self = this;
-          this.counter = 0;
-          setInterval(function() {
-            self.counter++;
-          }, 100);
+          let login = self.api.require('login');
 
-          b.addEventListener('click', function() {
+          this.querySelector('paper-button').addEventListener('click', function() {
             console.log('try to execute login');
-            self.api.some_fn();
+            login(self.login, self.password).then((result) => {
+              console.log(result ? 'login success' : 'login failed');
+            });
           });
+
         }
       });
     })();
