@@ -1,0 +1,24 @@
+{
+  "name": "iris-polymer-login",
+  "homepage": "https://github.com/sdk-group/iris-polymer-login",
+  "authors": [
+    "artificial-life <proteus.protocol@gmail.com>"
+  ],
+  "description": "login component",
+  "main": "iris-polymer-login.html",
+  "moduleType": [],
+  "keywords": [
+    "login"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iris-polymer-importer": "https://github.com/sdk-group/iris-polymer-importer.git"
+  }
+}
