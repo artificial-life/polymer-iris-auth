@@ -28,11 +28,10 @@
         ready() {
           console.log('ready');
           let self = this;
-          let login = self.api.require('login');
+          let user = this.api.require('user');
 
           this.querySelector('paper-button').addEventListener('click', function() {
-            console.log('<iris-login>:try to execute login');
-            login(self.login, self.password).then((result) => {
+            user.login(self.login, self.password).then((result) => {
               console.log(result ? 'login success' : 'login failed');
             });
           });
