@@ -13,32 +13,26 @@
     </style>
     <paper-input label="Login" value="{{login::input}}"></paper-input>
     <paper-input label="Password" type="password" value="{{password::input}}"></paper-input>
-    <paper-button raised>login</paper-button>
+    <paper-button raised on-click="useLogin">login</paper-button>
   </template>
 
   <script>
-    (function() {
-      'use strict';
-
-      Polymer({
-        is: 'iris-login',
-        properties: {
-          api: Object
-        },
-        ready() {
-          console.log('ready');
-          let self = this;
-          let user = this.api.require('user');
-
-          this.querySelector('paper-button').addEventListener('click', function() {
-            user.login(self.login, self.password).then((result) => {
-              console.log(result ? 'login success' : 'login failed');
-            });
-          });
-
-        }
-      });
-    })();
+    'use strict';
+    Polymer({
+      is: 'iris-login',
+      properties: {
+        api: Object
+      },
+      ready() {
+        console.log('ready');
+      },
+      useLogin() {
+        let user = this.api.require('user');
+        user.login(this.login, this.password).then((result) => {
+          console.log(result ? 'login success' : 'login failed');
+        });
+      }
+    });
   </script>
 
 </dom-module>
