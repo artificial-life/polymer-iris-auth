@@ -29,7 +29,7 @@
       useLogin() {
         let user = this.api.require('user');
         user.login(this.login, this.password).then((result) => {
-          console.log(result ? 'login success' : 'login failed');
+          if (result) page('/controlpanel');
         });
       }
     });
