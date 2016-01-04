@@ -2,8 +2,9 @@
 <link rel="import" href="../../bower_components/iris-polymer-importer/iris-importer.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
-<link rel="import" href="../../bower_components/iron-meta/iron-meta.html">
+<link rel="import" href="../../bower_components/iris-polymer-api/iris-api.html">
 
 <dom-module id="iris-login">
   <template>
@@ -11,12 +12,30 @@
     <style>
       :host {
         display: block;
+        --paper-spinner-layer-1-color: #C79B65;
+        --paper-spinner-layer-2-color: #4a2015;
+      }
+      
+      paper-spinner {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto;
+        display: block;
       }
     </style>
-    <iron-meta id="meta"></iron-meta>
-    <paper-input label="Логин" value="{{login::input}}"></paper-input>
-    <paper-input label="Пароль" type="password" value="{{password::input}}"></paper-input>
-    <paper-button raised on-click="useLogin">Войти</paper-button>
+    <iris-currentuser id="user" is-logged="{{logged_in}}"></iris-currentuser>
+
+    <div class="login-spinner" hidden$="[[!processing]]">
+      <paper-spinner alt="Выполняется вход" active$="[[processing]]"></paper-spinner>
+    </div>
+    <div class="login-panel" hidden$="[[loginPanelVisibility(processing,logged_in)]]">
+      <paper-input label="Логин" value="{{login::input}}"></paper-input>
+      <paper-input label="Пароль" type="password" value="{{password::input}}"></paper-input>
+      <paper-button raised on-click="useLogin">Войти</paper-button>
+    </div>
+    <div hidden$="[[!logged_in]]">
+      Ты как бы уже залогинен, чо пришёл?
+    </div>
   </template>
 
   <script>
@@ -25,16 +44,24 @@
       is: 'iris-login',
       properties: {},
       ready() {
-        console.log('ready');
+        this.processing = false;
+        this.error_happens = false;
       },
       useLogin() {
-        let api = this.$.meta.byKey('api');
-
-        let user = api.require('user');
-        user.login(this.login, this.password).then((result) => {
-          if (result) page('/controlpanel');
+        this.processing = true;
+        this.$.user.login(this.login, this.password).then((result) => {
+          this.processing = false;
+          if (result) {
+            page('/controlpanel');
+          } else {
+            this.error_happens = true;
+          }
         });
+      },
+      loginPanelVisibility(processing, logged_in) {
+        return logged_in || processing;
       }
+
     });
   </script>
 
