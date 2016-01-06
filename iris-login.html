@@ -25,6 +25,7 @@
     </style>
     <iris-currentuser id="user" is-logged="{{logged_in}}"></iris-currentuser>
 
+    <span class="error" hidden$="[[!error_happens]]">Ошибка: [[error_text]] (c) Адмирал информативность</span>
     <div class="login-spinner" hidden$="[[!processing]]">
       <paper-spinner alt="Выполняется вход" active$="[[processing]]"></paper-spinner>
     </div>
@@ -46,16 +47,20 @@
       ready() {
         this.processing = false;
         this.error_happens = false;
+        this.error_text = '';
       },
       useLogin() {
         this.processing = true;
         this.$.user.login(this.login, this.password).then((result) => {
           this.processing = false;
-          if (result) {
-            page('/controlpanel');
-          } else {
-            this.error_happens = true;
-          }
+          page('/controlpanel');
+        }).catch((e) => {
+          this.processing = false;
+          if (e instanceof Error) throw e;
+          this.error_happens = true;
+          this.error_text = 'Что-то случилось...';
+          console.error('login failed', e);
+          return true;
         });
       },
       loginPanelVisibility(processing, logged_in) {
