@@ -30,8 +30,10 @@
       <paper-spinner alt="Выполняется вход" active$="[[processing]]"></paper-spinner>
     </div>
     <div class="login-panel" hidden$="[[loginPanelVisibility(processing,logged_in)]]">
-      <paper-input label="Логин" value="{{login::input}}"></paper-input>
-      <paper-input label="Пароль" type="password" value="{{password::input}}"></paper-input>
+      <form id="login-form">
+        <paper-input on-keypress="kp" label="Логин" value="{{login::input}}"></paper-input>
+        <paper-input on-keypress="kp" label="Пароль" type="password" value="{{password::input}}"></paper-input>
+      </form>
       <paper-button raised on-click="useLogin">Войти</paper-button>
     </div>
     <div hidden$="[[!logged_in]]">
@@ -49,6 +51,9 @@
         this.error_happens = false;
         this.error_text = '';
       },
+      kp(e) {
+        e.keyCode === 13 && this.useLogin();
+      },
       useLogin() {
         this.processing = true;
         this.$.user.login(this.login, this.password).then((result) => {
@@ -56,7 +61,7 @@
           page('/controlpanel');
         }).catch((e) => {
           this.processing = false;
-          if (e instanceof Error) throw e;
+          // if (e instanceof Error) throw e;
           this.error_happens = true;
           this.error_text = 'Что-то случилось...';
           console.error('login failed', e);
