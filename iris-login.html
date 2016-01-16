@@ -25,7 +25,7 @@
     </style>
     <iris-currentuser id="user" is-logged="{{logged_in}}"></iris-currentuser>
 
-    <span class="error" hidden$="[[!error_happens]]">Ошибка: [[error_text]] (c) Адмирал информативность</span>
+    <span class="error" hidden$="[[!error_happens]]">Ошибка: [[error_text]]</span>
     <div class="login-spinner" hidden$="[[!processing]]">
       <paper-spinner alt="Выполняется вход" active$="[[processing]]"></paper-spinner>
     </div>
@@ -37,42 +37,61 @@
       <paper-button raised on-click="useLogin">Войти</paper-button>
     </div>
     <div hidden$="[[!logged_in]]">
-      Ты как бы уже залогинен, чо пришёл?
+      <content></content>
     </div>
   </template>
 
   <script>
     'use strict';
-    Polymer({
-      is: 'iris-login',
-      properties: {},
-      ready() {
-        this.processing = false;
-        this.error_happens = false;
-        this.error_text = '';
-      },
-      kp(e) {
-        e.keyCode === 13 && this.useLogin();
-      },
-      useLogin() {
-        this.processing = true;
-        this.$.user.login(this.login, this.password).then((result) => {
-          this.processing = false;
-          page('/controlpanel');
-        }).catch((e) => {
-          this.processing = false;
-          // if (e instanceof Error) throw e;
-          this.error_happens = true;
-          this.error_text = 'Что-то случилось...';
-          console.error('login failed', e);
-          return true;
-        });
-      },
-      loginPanelVisibility(processing, logged_in) {
-        return logged_in || processing;
-      }
+    (function() {
+      let error_strings = {
+        'incorrect password.': 'неверный пароль',
+        'no such user.': 'пользователь не найден',
+        'internal error.': 'ошибка сервера',
+        'failed to fetch': 'сервер авторизации недоступен',
+        'unknown': 'неизвестная ошибка',
+        'application error': 'внутренняя ошибка приложения'
+      };
 
-    });
+      Polymer({
+        is: 'iris-login',
+        properties: {},
+        ready() {
+          this.processing = false;
+          this.error_happens = false;
+          this.error_text = '';
+        },
+        kp(e) {
+          e.keyCode === 13 && this.useLogin();
+        },
+        handleError(e) {
+          this.error_happens = true;
+          let is_jsError = e instanceof Error;
+
+          let unknown = is_jsError ? 'application error' : 'unknown';
+          let key = (is_jsError ? e.message || unknown : e.reason || unknown).toLowerCase();
+
+          this.error_text = error_strings[key] ? error_strings[key] : error_strings[unknown];
+          if (is_jsError && !error_strings[key]) throw e;
+        },
+        useLogin() {
+          this.processing = true;
+          this.$.user.login(this.login, this.password).then((result) => {
+            this.processing = false;
+            page('/controlpanel');
+          }).catch((e) => {
+            this.processing = false;
+            this.handleError(e);
+            console.error('login failed', e);
+            return false;
+          });
+        },
+        loginPanelVisibility(processing, logged_in) {
+          return logged_in || processing;
+        }
+
+      });
+    })();
   </script>
 
 </dom-module>
