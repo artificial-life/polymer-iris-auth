@@ -50,6 +50,7 @@
         'internal error.': 'ошибка сервера',
         'failed to fetch': 'сервер авторизации недоступен',
         'unknown': 'неизвестная ошибка',
+        'operation timeout': 'превышено время ожидания',
         'application error': 'внутренняя ошибка приложения'
       };
 
@@ -65,6 +66,7 @@
           e.keyCode === 13 && this.useLogin();
         },
         handleError(e) {
+          console.log(e);
           this.error_happens = true;
           let is_jsError = e instanceof Error;
 
