@@ -79,6 +79,7 @@
           this.processing = true;
           this.$.user.login(this.login, this.password).then((result) => {
             this.processing = false;
+            this.error_happens = false;
             page('/controlpanel');
           }).catch((e) => {
             this.processing = false;
