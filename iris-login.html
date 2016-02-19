@@ -31,8 +31,8 @@
     </div>
     <div class="login-panel" hidden$="[[loginPanelVisibility(processing,logged_in)]]">
       <form id="login-form">
-        <paper-input on-keypress="kp" label="Логин" value="{{login::input}}"></paper-input>
-        <paper-input on-keypress="kp" label="Пароль" type="password" value="{{password::input}}"></paper-input>
+        <paper-input on-keypress="kp" label="Логин" value="{{login}}"></paper-input>
+        <paper-input on-keypress="kp" label="Пароль" type="password" value="{{password}}"></paper-input>
       </form>
       <paper-button raised on-click="useLogin">Войти</paper-button>
     </div>
@@ -77,6 +77,7 @@
         },
         useLogin() {
           this.processing = true;
+
           this.$.user.login(this.login, this.password).then((result) => {
             this.processing = false;
             this.error_happens = false;
@@ -85,6 +86,7 @@
             this.processing = false;
             this.handleError(e);
             console.error('login failed', e);
+
             return false;
           });
         },
