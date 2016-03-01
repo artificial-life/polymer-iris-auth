@@ -51,8 +51,10 @@
         'failed to fetch': 'сервер авторизации недоступен',
         'unknown': 'неизвестная ошибка',
         'operation timeout': 'превышено время ожидания',
+        'ws anavailable': 'рабочее место недоступно данному оператору',
         'application error': 'внутренняя ошибка приложения'
       };
+
 
       Polymer({
         is: 'iris-login',
@@ -71,7 +73,6 @@
 
           let unknown = is_jsError ? 'application error' : 'unknown';
           let key = (is_jsError ? e.message || unknown : e.reason || unknown).toLowerCase();
-
           this.error_text = error_strings[key] ? error_strings[key] : error_strings[unknown];
           if (is_jsError && !error_strings[key]) throw e;
         },
