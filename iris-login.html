@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/iris-polymer-importer/iris-importer.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 
 <link rel="import" href="../../bower_components/iris-polymer-api/iris-api.html">
 
@@ -14,27 +14,69 @@
         display: block;
         --paper-spinner-layer-1-color: #C79B65;
         --paper-spinner-layer-2-color: #4a2015;
+        @apply(--shadow-elevation-4dp);
+        --paper-progress-height: 4px;
+        --paper-progress-active-color: var(--mydoc-red-800);
+        --paper-input-container-label-floating: {
+          font-size: 20px;
+        }
       }
       
-      paper-spinner {
-        width: 56px;
-        height: 56px;
-        margin: 0 auto;
-        display: block;
+      .login-panel {
+        padding: 10px;
+      }
+      
+      #login-form {
+        padding-bottom: 25px;
+      }
+      
+      #login-button {
+        width: 100%;
+        margin: 0;
+        background-color: var(--mydoc-beige-1000);
+        color: white;
+        font-weight: bold;
+        font-size: 19px;
+        letter-spacing: 1px;
+      }
+      
+      #greeting {
+        text-transform: uppercase;
+        background-color: var(--mydoc-beige-1000);
+        height: 100px;
+        font-size: 25px;
+        font-weight: bold;
+        color: white;
+        letter-spacing: 1px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      #greeting[error] {
+        font-size: 20px;
+        background-color: var(--mydoc-red-800);
+        font-weight: normal;
+        letter-spacing: 0px;
+      }
+      
+      #progress {
+        width: 100%;
       }
     </style>
     <iris-currentuser id="user" is-logged="{{logged_in}}"></iris-currentuser>
-
-    <span class="error" hidden$="[[!error_happens]]">Ошибка: [[error_text]]</span>
-    <div class="login-spinner" hidden$="[[!processing]]">
-      <paper-spinner alt="Выполняется вход" active$="[[processing]]"></paper-spinner>
+    <div error$="[[error_happens]]" id="greeting">
+      <span hidden$="[[error_happens]]">  Добро Пожаловать</span>
+      <span hidden$="[[!error_happens]]">[[error_text]]</span>
     </div>
-    <div class="login-panel" hidden$="[[loginPanelVisibility(processing,logged_in)]]">
+    <paper-progress id="progress" indeterminate disabled$="[[!processing]]"></paper-progress>
+
+    <div class="login-panel" disabled$="[[loginPanelVisibility(processing,logged_in)]]">
       <form id="login-form">
-        <paper-input on-keypress="kp" label="Логин" value="{{login}}"></paper-input>
-        <paper-input on-keypress="kp" label="Пароль" type="password" value="{{password}}"></paper-input>
+        <paper-input id="login" on-keypress="kp" label="Логин" value="{{login}}" error-message="Введите логин" required auto-validate></paper-input>
+        <paper-input id="password" on-keypress="kp" label="Пароль" type="password" error-message="Введите пароль" required auto-validate value="{{password}}"></paper-input>
       </form>
-      <paper-button raised on-click="useLogin">Войти</paper-button>
+      <paper-button id="login-button" raised on-click="useLogin" disabled$="[[processing]]">Войти</paper-button>
     </div>
     <div hidden$="[[!logged_in]]">
       <content></content>
@@ -77,8 +119,9 @@
           if (is_jsError && !error_strings[key]) throw e;
         },
         useLogin() {
-          this.processing = true;
+          if (!this.$.login.validate() || !this.$.password.validate()) return;
 
+          this.processing = true;
           this.$.user.login(this.login, this.password).then((result) => {
             this.processing = false;
             this.error_happens = false;
