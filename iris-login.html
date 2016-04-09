@@ -51,6 +51,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        text-align: center;
+        -webkit-transition: background-color 750ms linear;
+        -moz-transition: background-color 750ms linear;
+        -o-transition: background-color 750ms linear;
+        -ms-transition: background-color 750ms linear;
+        transition: background-color 750ms linear;
       }
       
       #greeting[error] {
@@ -66,7 +72,7 @@
     </style>
     <iris-currentuser id="user" is-logged="{{logged_in}}"></iris-currentuser>
     <div error$="[[error_happens]]" id="greeting">
-      <span hidden$="[[error_happens]]">  Добро Пожаловать</span>
+      <span hidden$="[[error_happens]]">Добро Пожаловать</span>
       <span hidden$="[[!error_happens]]">[[error_text]]</span>
     </div>
     <paper-progress id="progress" indeterminate disabled$="[[!processing]]"></paper-progress>
