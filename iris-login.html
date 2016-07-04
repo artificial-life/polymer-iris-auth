@@ -106,7 +106,7 @@
 
       Polymer({
         is: 'iris-login',
-        properties: {},
+
         ready() {
           this.processing = false;
           this.error_happens = false;
@@ -131,7 +131,19 @@
           this.$.user.login(this.login, this.password).then((result) => {
             this.processing = false;
             this.error_happens = false;
-            page('/controlpanel');
+            //@NOTE: Rework it after ws rework
+            let landing = '/controlpanel';
+            let av_types = this.$.user.getAvailableWorkstationTypes();
+
+            if (~av_types.indexOf('control-panel')) {
+              landing = '/controlpanel';
+            } else if (~av_types.indexOf('reports')) {
+              landing = '/reports';
+            } else if (~av_types.indexOf('reception')) {
+              landing = '/reception';
+            }
+
+            page(landing);
           }).catch((e) => {
             this.processing = false;
             this.handleError(e);
