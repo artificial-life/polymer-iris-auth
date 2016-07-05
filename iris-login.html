@@ -129,7 +129,7 @@
           this.$.user.login(this.login, this.password).then((result) => {
             this.processing = false;
             this.error_happens = false;
-            //@NOTE: Rework it after ws rework
+            //@NOTE: Rework it after building ws concept
             let landing = '/controlpanel';
             let av_types = this.$.user.getAvailableWorkstationTypes();
 
