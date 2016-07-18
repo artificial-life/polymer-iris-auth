@@ -98,9 +98,11 @@
         'unknown': 'неизвестная ошибка',
         'operation timeout': 'превышено время ожидания',
         'ws anavailable': 'рабочее место недоступно данному оператору',
-        'application error': 'внутренняя ошибка приложения'
+        'application error': 'внутренняя ошибка приложения',
+        'already occupied': 'рабочее место занято другим оператором'
       };
 
+      let Errors = IRIS.Errors;
 
       Polymer({
         is: 'iris-login',
@@ -118,7 +120,11 @@
           let is_jsError = e instanceof Error;
 
           let unknown = is_jsError ? 'application error' : 'unknown';
+
           let key = (is_jsError ? e.message || unknown : e.reason || unknown).toLowerCase();
+
+          if (~key.indexOf('already occupied')) key = "already occupied";
+
           this.error_text = error_strings[key] ? error_strings[key] : error_strings[unknown];
           if (is_jsError && !error_strings[key]) throw e;
         },
