@@ -61,12 +61,13 @@
         font-size: 20px;
         background-color: var(--mydoc-red-800);
         font-weight: normal;
-        letter-spacing: 0px;
+        letter-spacing: 0;
       }
 
       #progress {
         width: 100%;
       }
+
     </style>
     <iris-currentuser id="user" is-logged="{{logged_in}}"></iris-currentuser>
     <div error$="[[error_happens]]" id="greeting">
@@ -80,7 +81,7 @@
         <paper-input id="login" on-keypress="kp" label="Логин" value="{{login}}" error-message="Введите логин" required auto-validate></paper-input>
         <paper-input id="password" on-keypress="kp" label="Пароль" type="password" error-message="Введите пароль" required auto-validate value="{{password}}"></paper-input>
       </form>
-      <paper-button id="login-button" raised on-click="useLogin" disabled$="[[processing]]">Войти</paper-button>
+      <paper-button id="login-button" raised on-click="useLogin" disabled$="[[processing]]" tabindex="-1" onkeydown="return false" onkeypress="return false">Войти</paper-button>
     </div>
     <div hidden$="[[!logged_in]]">
       <content></content>
@@ -89,7 +90,7 @@
 
   <script>
     'use strict';
-    (function() {
+    (function () {
       let error_strings = {
         'incorrect password.': 'неверный пароль',
         'no such user.': 'пользователь не найден',
@@ -113,23 +114,33 @@
           this.error_text = '';
         },
         kp(e) {
-          e.keyCode === 13 && this.useLogin();
+          (e.keyCode === 13 && !this.processing) && this.useLogin();
         },
         handleError(e) {
           this.error_happens = true;
           let is_jsError = e instanceof Error;
 
-          let unknown = is_jsError ? 'application error' : 'unknown';
+          let unknown = is_jsError
+            ? 'application error'
+            : 'unknown';
 
-          let key = (is_jsError ? e.message || unknown : e.reason || unknown).toLowerCase();
+          let key = (is_jsError
+            ? e.message || unknown
+            : e.reason || unknown).toLowerCase();
 
-          if (~key.indexOf('already occupied')) key = "already occupied";
+          if (~ key.indexOf('already occupied'))
+            key = "already occupied";
 
-          this.error_text = error_strings[key] ? error_strings[key] : error_strings[unknown];
-          if (is_jsError && !error_strings[key]) throw e;
+          this.error_text = error_strings[key]
+            ? error_strings[key]
+            : error_strings[unknown];
+          if (is_jsError && !error_strings[key]) {
+            throw e;
+          }
         },
         useLogin() {
-          if (!this.$.login.validate() || !this.$.password.validate()) return;
+          if (!this.$.login.validate() || !this.$.password.validate())
+            return;
 
           this.processing = true;
           this.$.user.login(this.login, this.password).then((result) => {
@@ -137,13 +148,13 @@
             this.error_happens = false;
             //@NOTE: Rework it after building ws concept
             let landing = '/controlpanel';
-            let av_types = this.$.user.getAvailableWorkstationTypes();
+            let av_types = this.$.user.getSelectedWorkstationTypes();
 
-            if (~av_types.indexOf('control-panel')) {
+            if (~ av_types.indexOf('control-panel')) {
               landing = '/controlpanel';
-            } else if (~av_types.indexOf('reports')) {
+            } else if (~ av_types.indexOf('reports')) {
               landing = '/reports';
-            } else if (~av_types.indexOf('reception')) {
+            } else if (~ av_types.indexOf('reception')) {
               landing = '/reception';
             }
 
