@@ -149,13 +149,11 @@
             //@NOTE: Rework it after building ws concept
             let landing = '/controlpanel';
             let av_types = this.$.user.getSelectedWorkstationTypes();
-
+            // console.log('AFTER LOGIN', av_types, '/' + _.head(av_types).toLowerCase().replace('-', ''));
             if (~ av_types.indexOf('control-panel')) {
               landing = '/controlpanel';
-            } else if (~ av_types.indexOf('reports')) {
-              landing = '/reports';
-            } else if (~ av_types.indexOf('reception')) {
-              landing = '/reception';
+            } else {
+              landing = '/' + _.head(av_types).toLowerCase().replace('-', '');
             }
 
             page(landing);
